@@ -125,10 +125,10 @@ private:
         // clang-format on
     }
 
-    template <std::size_t... TPack>
+    template <std::size_t... TIndex>
     constexpr ConstexprString<TSize>
-    replaceInternal(const char c, const char cTo, IntSequence<std::size_t, TPack...>) const {
-        return ConstexprString<TSize>((mData[TPack] == c ? cTo : mData[TPack])...);
+    replaceInternal(const char c, const char cTo, IntSequence<std::size_t, TIndex...>) const {
+        return ConstexprString<TSize>((mData[TIndex] == c ? cTo : mData[TIndex])...);
     }
 
     template <std::size_t TNewSize>
@@ -139,16 +139,16 @@ private:
         return index < TSize ? (p(mData[index]) ? allOfInternal(index + 1, p) : false) : true;
     }
 
-    template <std::size_t... TPack>
-    constexpr ConstexprString(const char* str, IntSequence<std::size_t, TPack...>)
-        : mData{ str[TPack]..., '\0' } {}
+    template <std::size_t... TIndex>
+    constexpr ConstexprString(const char* str, IntSequence<std::size_t, TIndex...>)
+        : mData{ str[TIndex]..., '\0' } {}
 
-    template <std::size_t TSize1, std::size_t TSize2, std::size_t... TPack1, std::size_t... TPack2>
+    template <std::size_t TSize1, std::size_t TSize2, std::size_t... TIndex1, std::size_t... TIndex2>
     static constexpr ConstexprString<TSize1 + TSize2> concatenate(const ConstexprString<TSize1>& lhs,
                                                                   const ConstexprString<TSize2>& rhs,
-                                                                  IntSequence<std::size_t, TPack1...>,
-                                                                  IntSequence<std::size_t, TPack2...>) {
-        return ConstexprString<TSize1 + TSize2>(lhs[TPack1]..., rhs[TPack2]..., '\0');
+                                                                  IntSequence<std::size_t, TIndex1...>,
+                                                                  IntSequence<std::size_t, TIndex2...>) {
+        return ConstexprString<TSize1 + TSize2>(lhs[TIndex1]..., rhs[TIndex2]..., '\0');
     }
 
     char mData[TSize + 1];
@@ -172,16 +172,16 @@ constexpr ConstexprString<TSize - 1> String(char const (&str)[TSize]) {
 }
 
 namespace Detail {
-template <std::size_t TSize, std::size_t... TPack>
+template <std::size_t TSize, std::size_t... TIndex>
 constexpr ConstexprString<TSize> toLowerImpl(const ConstexprString<TSize>& str,
-                                             IntSequence<std::size_t, TPack...>) {
-    return ConstexprString<TSize>(toLower(str[TPack])...);
+                                             IntSequence<std::size_t, TIndex...>) {
+    return ConstexprString<TSize>(toLower(str[TIndex])...);
 }
 
-template <std::size_t TSize, std::size_t... TPack>
+template <std::size_t TSize, std::size_t... TIndex>
 constexpr ConstexprString<TSize> toUpperImpl(const ConstexprString<TSize>& str,
-                                             IntSequence<std::size_t, TPack...>) {
-    return ConstexprString<TSize>(toUpper(str[TPack])...);
+                                             IntSequence<std::size_t, TIndex...>) {
+    return ConstexprString<TSize>(toUpper(str[TIndex])...);
 }
 } // namespace Detail
 
