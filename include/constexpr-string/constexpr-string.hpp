@@ -100,6 +100,10 @@ public:
         return findInternal(pos, 0, str);
     }
 
+    constexpr ConstexprString<TSize> replace(const char c, const char cTo) const {
+        return replaceInternal(c, cTo, MakeIntSequence<std::size_t, TSize>{});
+    }
+
     constexpr std::size_t find(const char c, const std::size_t pos = 0) const { return findInternal(pos, c); }
 
     constexpr const char* begin() const { return mData; }
@@ -119,6 +123,12 @@ private:
                    ? index - TOtherSize + 1
                    : (index < TSize ? (mData[index] == str[index2] ? findInternal(index + 1, index2 + 1, str) : findInternal(index + 1 - index2, 0, str)) : StringNpos);
         // clang-format on
+    }
+
+    template <std::size_t... TPack>
+    constexpr ConstexprString<TSize>
+    replaceInternal(const char c, const char cTo, IntSequence<std::size_t, TPack...>) const {
+        return ConstexprString<TSize>((mData[TPack] == c ? cTo : mData[TPack])...);
     }
 
     template <std::size_t TNewSize>

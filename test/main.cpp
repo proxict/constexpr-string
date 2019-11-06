@@ -76,5 +76,7 @@ int main() {
     static_assert(toUpper(String("UPPER")) == String("UPPER"), "toUpper failed");
     static_assert(toUpper(String("ToUpper")) == String("TOUPPER"), "toUpper failed");
 
+    static_assert(sentence.replace('t', 'x') == String("I xhink xhis is a xesx sxring."), "replace failed");
+
     puts("Passed");
 }
