@@ -25,6 +25,7 @@ int main() {
     constexpr auto postfix = String(" string.");
     static constexpr auto sentence = prefix + str + postfix;
 
+    static_assert(String("ABC") + "def" + String("Ghi") == String("ABCdefGhi"), "Concatenation failed");
     static_assert(sentence.size() == prefix.size() + str.size() + postfix.size(), "Concatenation failed");
     static_assert(sentence == String("I think this is a test string."), "");
     static_assert(sentence[sentence.size()] == 0, "String must be null terminated");

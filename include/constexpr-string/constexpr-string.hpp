@@ -54,19 +54,14 @@ static constexpr std::size_t StringNpos = 0xFFFFFFFF;
 template <std::size_t TSize>
 class ConstexprString final {
 public:
-    constexpr explicit ConstexprString(const char* data)
-        : ConstexprString(data, MakeIntSequence<std::size_t, TSize>()) {}
+    constexpr explicit ConstexprString(const char* str)
+        : ConstexprString(str, MakeIntSequence<std::size_t, TSize>()) {}
 
     template <typename... TChars>
     constexpr ConstexprString(const char c, const TChars... chars)
         : mData{ c, chars... } {}
 
     constexpr char operator[](const std::size_t index) const { return mData[index]; }
-
-    template <std::size_t TOtherSize, typename = EnableIf<TOtherSize <= TSize>>
-    constexpr ConstexprString(const ConstexprString<TOtherSize>& s1,
-                              const ConstexprString<TSize - TOtherSize>& s2)
-        : ConstexprString{ s1, s2, MakeIntSequence<std::size_t, TOtherSize>{}, MakeIntSequence<std::size_t, TSize - TOtherSize>{} } {}
 
     constexpr const char* cStr() const noexcept { return mData; }
 
@@ -81,7 +76,8 @@ public:
 
     template <std::size_t TOtherSize>
     constexpr ConstexprString<TSize + TOtherSize> operator+(const ConstexprString<TOtherSize>& rhs) const {
-        return ConstexprString<TSize + TOtherSize>(*this, rhs);
+        return concatenate(
+            *this, rhs, MakeIntSequence<std::size_t, TSize>{}, MakeIntSequence<std::size_t, TOtherSize>{});
     }
 
     template <std::size_t TFrom, std::size_t TTo = TSize, typename = EnableIf<TFrom <= TTo>>
@@ -116,7 +112,8 @@ private:
     }
 
     template <std::size_t TOtherSize>
-    constexpr std::size_t findInternal(std::size_t index, std::size_t index2, char const (&str)[TOtherSize]) const {
+    constexpr std::size_t
+    findInternal(std::size_t index, std::size_t index2, char const (&str)[TOtherSize]) const {
         // clang-format off
         return index2 == TOtherSize - 1
                    ? index - TOtherSize + 1
@@ -136,15 +133,28 @@ private:
     constexpr ConstexprString(const char* str, IntSequence<std::size_t, TPack...>)
         : mData{ str[TPack]..., '\0' } {}
 
-    template <std::size_t TOtherSize, std::size_t... TPack1, std::size_t... TPack2>
-    constexpr ConstexprString(const ConstexprString<TOtherSize>& lhs,
-                              const ConstexprString<TSize - TOtherSize>& rhs,
-                              IntSequence<std::size_t, TPack1...>,
-                              IntSequence<std::size_t, TPack2...>)
-        : mData{ lhs[TPack1]..., rhs[TPack2]..., '\0' } {}
+    template <std::size_t TSize1, std::size_t TSize2, std::size_t... TPack1, std::size_t... TPack2>
+    static constexpr ConstexprString<TSize1 + TSize2> concatenate(const ConstexprString<TSize1>& lhs,
+                                                                  const ConstexprString<TSize2>& rhs,
+                                                                  IntSequence<std::size_t, TPack1...>,
+                                                                  IntSequence<std::size_t, TPack2...>) {
+        return ConstexprString<TSize1 + TSize2>(lhs[TPack1]..., rhs[TPack2]..., '\0');
+    }
 
     char mData[TSize + 1];
 };
+
+template <std::size_t TSize1, std::size_t TSize2>
+constexpr ConstexprString<TSize1 - 1 + TSize2> operator+(const char (&lhs)[TSize1],
+                                                         const ConstexprString<TSize2>& rhs) {
+    return ConstexprString<TSize1 - 1>(lhs) + rhs;
+}
+
+template <std::size_t TSize1, std::size_t TSize2>
+constexpr ConstexprString<TSize1 + TSize2 - 1> operator+(const ConstexprString<TSize1>& lhs,
+                                                         const char (&rhs)[TSize2]) {
+    return lhs + ConstexprString<TSize2 - 1>(rhs);
+}
 
 template <std::size_t TSize>
 constexpr ConstexprString<TSize - 1> String(char const (&str)[TSize]) {
@@ -153,12 +163,14 @@ constexpr ConstexprString<TSize - 1> String(char const (&str)[TSize]) {
 
 namespace Detail {
 template <std::size_t TSize, std::size_t... TPack>
-constexpr ConstexprString<TSize> toLowerImpl(const ConstexprString<TSize>& str, IntSequence<std::size_t, TPack...>) {
+constexpr ConstexprString<TSize> toLowerImpl(const ConstexprString<TSize>& str,
+                                             IntSequence<std::size_t, TPack...>) {
     return ConstexprString<TSize>(toLower(str[TPack])...);
 }
 
 template <std::size_t TSize, std::size_t... TPack>
-constexpr ConstexprString<TSize> toUpperImpl(const ConstexprString<TSize>& str, IntSequence<std::size_t, TPack...>) {
+constexpr ConstexprString<TSize> toUpperImpl(const ConstexprString<TSize>& str,
+                                             IntSequence<std::size_t, TPack...>) {
     return ConstexprString<TSize>(toUpper(str[TPack])...);
 }
 } // namespace Detail
