@@ -1,0 +1,7 @@
+--language
+c++
+-std=c++11
+-Iinclude
+-Wall
+-Wextra
+-Wno-stringop-overflow
