@@ -49,6 +49,11 @@ constexpr char toUpper(const char c) {
     return c >= 'a' && c <= 'z' ? c - ('a' - 'A') : c;
 }
 
+template <typename T>
+constexpr T cmin(const T& lhs, const T& rhs) {
+    return rhs < lhs ? rhs : lhs;
+}
+
 static constexpr std::size_t StringNpos = 0xFFFFFFFF;
 
 template <std::size_t TSize>
@@ -97,6 +102,13 @@ public:
 
     constexpr std::size_t find(const char c, const std::size_t pos = 0) const {
         return pos < TSize ? (mData[pos] == c ? pos : find(c, pos + 1)) : StringNpos;
+    }
+
+    constexpr std::size_t rfind(const char c, const std::size_t pos = StringNpos) const {
+        // clang-format off
+        return pos == 0 ? (mData[cmin(pos, TSize - 1)] == c ? pos : StringNpos)
+                        : mData[cmin(pos, TSize - 1)] == c ? cmin(pos, TSize - 1) : rfind(c, cmin(pos, TSize - 1) - 1);
+        // clang-format on
     }
 
     template <std::size_t TOtherSize, typename = EnableIf<TOtherSize - 1 <= TSize>>

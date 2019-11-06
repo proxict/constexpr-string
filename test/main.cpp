@@ -56,6 +56,11 @@ int main() {
     static_assert(sentence.substr<8, 22>().find("is a test") == 5, "find failed");
     static_assert(sentence.substr<8, 22>().find("s a test") == 6, "find failed");
 
+    static_assert(sentence.rfind('I') == 0, "find failed");
+    static_assert(sentence.rfind('t') == 24, "find failed");
+    static_assert(sentence.rfind('x') == StringNpos, "find failed");
+    static_assert(sentence.rfind('t', 10) == 8, "find failed");
+
     static_assert(toLower('A') == 'a', "toLower failed");
     static_assert(toLower('Z') == 'z', "toLower failed");
     static_assert(toLower('a') == 'a', "toLower failed");
