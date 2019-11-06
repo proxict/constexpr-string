@@ -4,14 +4,14 @@ constexpr-string
 ------------
 
 This library provides a `ConstexprString` class which gives you the possibility to work with your strings in compile-time.
+ - Written in C++11
 
 The class implements:
- - iterator over all string characters
- - size getter
  - concatenation with other strings
- - equality comparator
  - find
  - substr
+ - iterator over all string characters
+ - equality comparator
  
 Integration with CMake
 ----------------------------
