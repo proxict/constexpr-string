@@ -4,4 +4,3 @@ c++
 -Iinclude
 -Wall
 -Wextra
--Wno-stringop-overflow

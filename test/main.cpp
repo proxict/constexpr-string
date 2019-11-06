@@ -35,25 +35,45 @@ int main() {
 
     static_assert(sentence.find('I') == 0, "find failed");
     static_assert(sentence.find('t') == 2, "find failed");
-    static_assert(sentence.find('!') == -1, "find failed");
+    static_assert(sentence.find('!') == StringNpos, "find failed");
     static_assert(sentence.find('.') == sentence.size() - 1, "find failed");
 
     static_assert(sentence.find('k', 6) == 6, "find failed");
-    static_assert(sentence.find('k', 7) == -1, "find failed");
+    static_assert(sentence.find('k', 7) == StringNpos, "find failed");
     static_assert(sentence.find('t', 0) == 2, "find failed");
     static_assert(sentence.find('t', 10) == 18, "find failed");
     static_assert(sentence.find("think", 0) == 2, "find failed");
-    static_assert(sentence.find("think", 3) == -1, "find failed");
+    static_assert(sentence.find("think", 3) == StringNpos, "find failed");
     static_assert(sentence.find("is", 5) == 10, "find failed");
     static_assert(sentence.find("is", 11) == 13, "find failed");
 
-    static_assert(sentence.find("abc") == -1, "find failed");
+    static_assert(sentence.find("abc") == StringNpos, "find failed");
     static_assert(sentence.find("I think") == 0, "find failed");
     static_assert(sentence.find("think") == 2, "find failed");
 
     static_assert(sentence.substr<8, 22>().find(" is a test") == 4, "find failed");
     static_assert(sentence.substr<8, 22>().find("is a test") == 5, "find failed");
     static_assert(sentence.substr<8, 22>().find("s a test") == 6, "find failed");
+
+    static_assert(toLower('A') == 'a', "toLower failed");
+    static_assert(toLower('Z') == 'z', "toLower failed");
+    static_assert(toLower('a') == 'a', "toLower failed");
+    static_assert(toLower(' ') == ' ', "toLower failed");
+    static_assert(toLower('~') == '~', "toLower failed");
+
+    static_assert(toUpper('a') == 'A', "toUpper failed");
+    static_assert(toUpper('z') == 'Z', "toUpper failed");
+    static_assert(toUpper('A') == 'A', "toUpper failed");
+    static_assert(toUpper(' ') == ' ', "toUpper failed");
+    static_assert(toUpper('~') == '~', "toUpper failed");
+
+    static_assert(toLower(String("lower")) == String("lower"), "toLower failed");
+    static_assert(toLower(String("UPPER")) == String("upper"), "toLower failed");
+    static_assert(toLower(String("ToLower")) == String("tolower"), "toLower failed");
+
+    static_assert(toUpper(String("lower")) == String("LOWER"), "toUpper failed");
+    static_assert(toUpper(String("UPPER")) == String("UPPER"), "toUpper failed");
+    static_assert(toUpper(String("ToUpper")) == String("TOUPPER"), "toUpper failed");
 
     puts("Passed");
 }
