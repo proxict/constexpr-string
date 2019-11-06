@@ -95,6 +95,10 @@ public:
         return !(*this == rhs);
     }
 
+    constexpr std::size_t find(const char c, const std::size_t pos = 0) const {
+        return pos < TSize ? (mData[pos] == c ? pos : find(c, pos + 1)) : StringNpos;
+    }
+
     template <std::size_t TOtherSize, typename = EnableIf<TOtherSize - 1 <= TSize>>
     constexpr std::size_t find(char const (&str)[TOtherSize], const std::size_t pos = 0) const {
         return findInternal(pos, 0, str);
@@ -104,17 +108,11 @@ public:
         return replaceInternal(c, cTo, MakeIntSequence<std::size_t, TSize>{});
     }
 
-    constexpr std::size_t find(const char c, const std::size_t pos = 0) const { return findInternal(pos, c); }
-
     constexpr const char* begin() const { return mData; }
 
     constexpr const char* end() const { return mData + TSize; }
 
 private:
-    constexpr std::size_t findInternal(std::size_t index, const char c) const {
-        return index < TSize ? (mData[index] == c ? index : findInternal(index + 1, c)) : StringNpos;
-    }
-
     template <std::size_t TOtherSize>
     constexpr std::size_t
     findInternal(std::size_t index, std::size_t index2, char const (&str)[TOtherSize]) const {
