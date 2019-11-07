@@ -113,7 +113,14 @@ public:
 
     template <std::size_t TOtherSize, typename = EnableIf<TOtherSize - 1 <= TSize>>
     constexpr std::size_t find(char const (&str)[TOtherSize], const std::size_t pos = 0) const {
-        return findInternal(pos, 0, str);
+        return pos < TSize ? (findSubstr(pos, 0, str) ? pos : find(str, pos + 1)) : StringNpos;
+    }
+
+    template <std::size_t TOtherSize, typename = EnableIf<TOtherSize - 1 <= TSize>>
+    constexpr std::size_t rfind(char const (&str)[TOtherSize], const std::size_t pos = StringNpos) const {
+        return pos == 0 ? (findSubstr(0, 0, str) ? pos : StringNpos)
+                        : findSubstr(cmin(pos, TSize), 0, str) ? cmin(pos, TSize)
+                                                               : rfind(str, cmin(pos, TSize) - 1);
     }
 
     constexpr ConstexprString<TSize> replace(const char c, const char cTo) const {
@@ -126,12 +133,10 @@ public:
 
 private:
     template <std::size_t TOtherSize>
-    constexpr std::size_t
-    findInternal(std::size_t index, std::size_t index2, char const (&str)[TOtherSize]) const {
+    constexpr bool findSubstr(std::size_t index, std::size_t index2, char const (&str)[TOtherSize]) const {
         // clang-format off
-        return index2 == TOtherSize - 1
-                   ? index - TOtherSize + 1
-                   : (index < TSize ? (mData[index] == str[index2] ? findInternal(index + 1, index2 + 1, str) : findInternal(index + 1 - index2, 0, str)) : StringNpos);
+        return index2 == TOtherSize - 1 ? true :
+            (index < TSize ? (mData[index] == str[index2] ? findSubstr(index + 1, index2 + 1, str) : false) : false);
         // clang-format on
     }
 
