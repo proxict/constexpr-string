@@ -74,6 +74,8 @@ public:
 
     constexpr std::size_t size() const { return TSize; }
 
+    constexpr bool empty() const { return TSize == 0; };
+
     template <typename TPredicate>
     constexpr bool allOf(TPredicate&& p) const {
         return allOfInternal(0, p);
