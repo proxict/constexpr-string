@@ -91,5 +91,25 @@ int main() {
 
     static_assert(sentence.replace('t', 'x') == String("I xhink xhis is a xesx sxring."), "replace failed");
 
+    static_assert(String("Hello World!").findFirstOf("o") == 4, "findFirstOf failed");
+    static_assert(String("Hello World!").findFirstOf("o", 5) == 7, "findFirstOf failed");
+    static_assert(String("Hello World!").findFirstOf("Good Bye!") == 1, "findFirstOf failed");
+    static_assert(String("Hello World!").findFirstOf("Good Bye!", 0, 4) == 4, "findFirstOf failed");
+
+    static_assert(String("Hello World!").findFirstNotOf("Hello there!") == 6, "findFirstNotOf failed");
+    static_assert(String("Hello World!").findFirstNotOf("o") == 0, "findFirstNotOf failed");
+    static_assert(String("Hello World!").findFirstNotOf("Hello World!") == StringNpos, "findFirstNotOf failed");
+    static_assert(String("Hello World!").findFirstNotOf("Hello World") == 11, "findFirstNotOf failed");
+
+    static_assert(String("Hello World!").findLastOf("o") == 7, "findLastOf failed");
+    static_assert(String("Hello World!").findLastOf("o", 5) == 4, "findLastOf failed");
+    static_assert(String("Hello World!").findLastOf("Good Bye") == 10, "findLastOf failed");
+    static_assert(String("Hello World!").findLastOf("Good Bye!", 0, 4) == StringNpos, "findLastOf failed");
+
+    static_assert(String("Hello World!").findLastNotOf("Hello there!") == 10, "findLastNotOf failed");
+    static_assert(String("Hello World!").findLastNotOf("o") == 11, "findLastNotOf failed");
+    static_assert(String("Hello World!").findLastNotOf("Hello World!") == StringNpos, "findLastNotOf failed");
+    static_assert(String("Hello World!").findLastNotOf("Hello World") == 11, "findLastNotOf failed");
+
     puts("Passed");
 }

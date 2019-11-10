@@ -121,8 +121,42 @@ public:
     template <std::size_t TOtherSize, typename = EnableIf<TOtherSize - 1 <= TSize>>
     constexpr std::size_t rfind(char const (&str)[TOtherSize], const std::size_t pos = StringNpos) const {
         return pos == 0 ? (findSubstr(0, 0, str) ? pos : StringNpos)
-                        : findSubstr(cmin(pos, TSize), 0, str) ? cmin(pos, TSize)
-                                                               : rfind(str, cmin(pos, TSize) - 1);
+                        : findSubstr(cmin(pos, TSize - 1), 0, str) ? cmin(pos, TSize - 1)
+                                                               : rfind(str, cmin(pos, TSize - 1) - 1);
+    }
+
+    template <std::size_t TOtherSize>
+    constexpr std::size_t findFirstOf(char const (&str)[TOtherSize],
+                                      const std::size_t pos = 0,
+                                      const std::size_t count = StringNpos) const {
+        return pos < TSize ? (findAnyOf(pos, 0, str, count) ? pos : findFirstOf(str, pos + 1, count))
+                           : StringNpos;
+    }
+
+    template <std::size_t TOtherSize>
+    constexpr std::size_t findFirstNotOf(char const (&str)[TOtherSize],
+                                      const std::size_t pos = 0,
+                                      const std::size_t count = StringNpos) const {
+        return pos < TSize ? (!findAnyOf(pos, 0, str, count) ? pos : findFirstNotOf(str, pos + 1, count))
+                           : StringNpos;
+    }
+
+    template <std::size_t TOtherSize>
+    constexpr std::size_t findLastOf(char const (&str)[TOtherSize],
+                                     const std::size_t pos = StringNpos,
+                                     const std::size_t count = StringNpos) const {
+        return pos == 0 ? (findAnyOf(0, 0, str, count) ? 0 : StringNpos)
+                        : findAnyOf(cmin(pos, TSize - 1), 0, str, count) ? cmin(pos, TSize - 1)
+                                                                     : findLastOf(str, cmin(pos, TSize - 1) - 1, count);
+    }
+
+    template <std::size_t TOtherSize>
+    constexpr std::size_t findLastNotOf(char const (&str)[TOtherSize],
+                                     const std::size_t pos = StringNpos,
+                                     const std::size_t count = StringNpos) const {
+        return pos == 0 ? (!findAnyOf(0, 0, str, count) ? 0 : StringNpos)
+                        : !findAnyOf(cmin(pos, TSize - 1), 0, str, count) ? cmin(pos, TSize - 1)
+                                                                     : findLastNotOf(str, cmin(pos, TSize - 1) - 1, count);
     }
 
     constexpr ConstexprString<TSize> replace(const char c, const char cTo) const {
@@ -134,6 +168,16 @@ public:
     constexpr const char* end() const { return mData + TSize; }
 
 private:
+    template <std::size_t TOtherSize>
+    constexpr bool findAnyOf(std::size_t index,
+                             std::size_t index2,
+                             char const (&str)[TOtherSize],
+                             const std::size_t count = StringNpos) const {
+        return index2 >= cmin(TOtherSize - 1, count)
+                   ? false
+                   : (mData[index] == str[index2] ? true : findAnyOf(index, index2 + 1, str, count));
+    }
+
     template <std::size_t TOtherSize>
     constexpr bool findSubstr(std::size_t index, std::size_t index2, char const (&str)[TOtherSize]) const {
         // clang-format off
