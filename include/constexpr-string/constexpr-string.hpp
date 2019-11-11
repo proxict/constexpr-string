@@ -88,8 +88,8 @@ public:
     }
 
     template <std::size_t TFrom, std::size_t TTo = TSize, typename = EnableIf<TFrom <= TTo>>
-    constexpr ConstexprString<TTo - TFrom> substr() const {
-        return ConstexprString<TTo - TFrom>(mData + TFrom, MakeIntSequence<std::size_t, TTo - TFrom>{});
+    constexpr ConstexprString<cmin(TTo, TSize) - TFrom> substr() const {
+        return ConstexprString<cmin(TTo, TSize) - TFrom>(mData + TFrom, MakeIntSequence<std::size_t, cmin(TTo, TSize) - TFrom>{});
     }
 
     template <std::size_t TOtherSize>

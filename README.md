@@ -16,8 +16,16 @@ The class implements:
  - findFirstNotOf
  - findLastOf
  - findLastNotOf
+ - allOf
  - iterator over all string characters
  - equality comparator
+
+Non-member functions:
+ - cstrlen
+ - cstreq
+ - toLower
+ - toUpper
+ - cmin
  
 Integration with CMake
 ----------------------------
@@ -48,9 +56,24 @@ struct IsHexChar {
 };
 
 int main() {
+    constexpr auto tale = String("Let me tell you a tale");
+    static_assert("Listen. " + tale + ", ok?" == String("Listen. Let me tell you a tale, ok?"), "String concatenation");
+    static_assert(tale.replace('l', 'k') == String("Let me tekk you a take"), "Char replace");
+    static_assert(tale.substr<7, 15>() == String("tell you"), "String substr");
+    static_assert(tale.find('y') == 12, "String find");
+    static_assert(tale.find('t', 4) == 7, "String find");
+    static_assert(tale.find("tell") == 7, "String find");
+    static_assert(tale.find("story") == StringNpos, "String find");
+    static_assert(tale.rfind('l') == 20, "String rfind");
+    static_assert(tale.findFirstOf("tlf") == 2, "String findFirstOf");
+    static_assert(tale.findLastOf("tlf") == 20, "String findLastOf");
+    static_assert(tale.findFirstNotOf("Let me") == 9, "String findFirstNotOf");
+    static_assert(tale.findLastNotOf("tale ") == 14, "String findLastNotOf");
+    static_assert(toLower(tale) == String("let me tell you a tale"), "toLower");
+    static_assert(toUpper(tale) == String("LET ME TELL YOU A TALE"), "toUpper");
     constexpr auto hexStr = String("8dd42e58184249a1974295b4bb97de9a");
     static_assert((hexStr.size() & 1) == 0, "This string must have even length");
     static_assert(hexStr.allOf(IsHexChar()), "This string may contain hex chars only");
-    std::cout << hexStr.cStr() << std::endl;
+    std::cout << tale.cStr() << std::endl;
 }
 ```
