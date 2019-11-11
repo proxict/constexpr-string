@@ -8,8 +8,14 @@ This library provides a `ConstexprString` class which gives you the possibility 
 
 The class implements:
  - concatenation with other strings
- - find
+ - replace
  - substr
+ - find
+ - rfind
+ - findFirstOf
+ - findFirstNotOf
+ - findLastOf
+ - findLastNotOf
  - iterator over all string characters
  - equality comparator
  
